@@ -1,51 +1,135 @@
-# 发个东西
-一个局域网文字/文件P2P传输工具
-> 项目中仅在线用户列表和WebRTC信令迫不得已需要一个轻量化的服务，其他数据传输都采用了基于WebRTC的点对点传输，不经过中间服务器，所以局域网内互传一些文字/文件都比较快。
+<p align="center">
+  <img src="https://img.shields.io/badge/WebRTC-P2P-FF6600?style=for-the-badge&logo=webrtc" alt="WebRTC">
+  <img src="https://img.shields.io/badge/Node.js-16+-339933?style=for-the-badge&logo=node.js" alt="Node.js">
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
+</p>
 
-demo演示：https://fagedongxi.com
+<h1 align="center">💬 internal-chat</h1>
 
-## 优点
-无需安装任何软件，打开浏览器，无需登录直接传输。
+<p align="center">
+  <b>局域网 P2P 聊天和文件传输工具</b>
+</p>
 
-## 缺点
-接收大文件比较吃内存（单文件几百兆一般没问题）
+<p align="center">
+  WebRTC 点对点传输 · 无需登录 · 拖拽发文件 · 房间密码保护 · 跨平台
+</p>
 
-## 场景：
-比如新装的win系统需要从mac系统传一些需要🪜才能下载的软件或者搜到的一些东西
+---
 
-## 服务端部署（仅部署服务端不行，一定看到最后的“网页部署”）：
-部署介绍：https://v.douyin.com/iUWewPmf/
+## 📌 项目简介
 
-### 源码方式
-1. 安装nodejs，node版本没有测试，我用的是 `16.20.2`
-2. 下载源码（服务端仅需要`server`目录）
-3. 进入 `server` 目录，运行 `npm install`
-4. 运行 `npm run start [port]` ，例如 `npm run start 8081`
+internal-chat（发个东西）是一款基于 WebRTC 的局域网 P2P 文字聊天和文件传输工具。仅在线用户列表和信令交换需要轻量化服务端，所有数据传输均采用 WebRTC 点对点直连，不经过中间服务器，局域网内互传文字和文件速度快、隐私安全。
 
-### 二进制方式
-* 下载对应平台的可执行文件，直接执行即可（服务端）
-* 默认监听 `8081` 端口，可通过参数指定端口，例如 `./internal-chat-linux 8082`
-* 如果你用windows，可参考 https://v.douyin.com/CeiJahpLD/ 注册成服务
+> 无需安装任何软件，打开浏览器，直接传输。
 
-### 服务端nginx反向代理配置参考（可选）
-> 服务端用反向代理的好处：可以直接用certbot申请https证书，然后直接用wss协议。
-> 如果采用下方的配置反向代理，注意在客户端配置`wsUrl`变量的时候，需要加 `/ws`，否则不用
+---
+
+## ✨ 核心特性
+
+- 💬 **P2P 文字聊天** — 基于 WebRTC DataChannel 的点对点即时通讯
+- 📁 **P2P 文件传输** — 拖拽即可发送文件，支持进度显示和速度统计
+- 🔒 **房间密码保护** — 支持创建加密房间，MD5 密码验证
+- 👤 **自定义昵称** — 设置昵称并持久化到 Cookie，跨会话保持
+- 🌐 **零安装** — 打开浏览器即可使用，无需安装客户端
+- ⚡ **局域网极速** — 数据直连传输，不走服务器，速度取决于局域网带宽
+- 🔄 **自动重连** — 连接断开后自动尝试重新建立 WebRTC 连接
+- 📦 **分块传输** — 8KB 分块 + 缺失重传机制，确保文件完整性
+- 📱 **移动端适配** — 响应式设计，手机端也可使用
+- 🔗 **URL 链接识别** — 自动识别聊天中的 URL 并转为可点击链接
+- 📋 **消息复制** — 一键复制聊天消息内容
+
+---
+
+## 🛠️ 技术栈
+
+| 技术 | 用途 |
+|------|------|
+| **WebRTC** | P2P 数据通道，点对点聊天和文件传输 |
+| **WebSocket (ws)** | 信令服务器，仅用于连接建立 |
+| **Node.js** | 服务端运行环境 |
+| **HTML5 / CSS3 / JavaScript** | 前端界面 |
+| **STUN/TURN** | NAT 穿透，支持自定义 TURN 服务器 |
+
+---
+
+## 🚀 快速开始
+
+### 前置条件
+
+- Node.js 16+
+- Nginx（可选，用于 HTTPS 和反向代理）
+
+### 安装步骤
+
+```bash
+git clone https://github.com/aiyangdie/internal-chat.git
+cd internal-chat
 ```
-  location /ws/ {
-    proxy_pass http://localhost:8081/;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-  }
+
+### 服务端部署
+
+```bash
+cd server
+npm install
+npm run start [port]
 ```
 
-## 网页部署：
-1. 下载源码并修改`www/index.js`第一行代码`wsUrl`变量（如果服务端配置了反向代理，这里路径最后要加`/ws`，否则不用）
-2. 直接将`www`用nginx部署成一个静态网站即可，具体配置参考 `nginxvhost.conf`。如果你没有域名，将 `server_name` 写成 `_` 即可（属于nginx基础知识）
-3. 访问 `http://your.domain.com/` 即可
+默认监听 `8081` 端口，可通过参数指定：`npm run start 8082`
 
-## 免责声明：
+### 前端部署
+
+1. 修改 `www/index.js` 第一行 `wsUrl` 变量为你的信令服务器地址
+2. 将 `www` 目录用 Nginx 部署为静态网站
+
+### 运行命令
+
+```bash
+cd server
+npm install
+npm start
+```
+
+访问 `http://your.domain.com/` 即可使用。
+
+---
+
+## 📂 项目结构
+
+```
+internal-chat/
+├── server/                  # 信令服务器
+│   ├── index.js             # WebSocket 信令服务主入口
+│   ├── data.js              # 用户管理（注册/注销/房间/昵称）
+│   ├── .room_pwd.json       # 房间密码配置
+│   ├── package.json         # 服务端依赖
+│   └── package-lock.json
+├── www/                     # 前端静态文件
+│   ├── index.html           # 主页面
+│   ├── index.js             # 前端逻辑（WebSocket/消息/文件发送）
+│   ├── xchatuser.js         # WebRTC 封装（XChatUser 类）
+│   └── style.css            # 界面样式
+├── nginxvhost.conf          # Nginx 反向代理配置参考
+├── CNAME                    # 自定义域名
+├── LICENSE                  # MIT 开源协议
+└── README.md
+```
+
+---
+
+## 🤝 贡献与许可证
+
+欢迎贡献！请遵循以下流程：
+
+1. **Fork** 本仓库
+2. 创建特性分支: `git checkout -b feature/amazing-feature`
+3. 提交更改: `git commit -m 'feat: add amazing feature'`
+4. 推送分支: `git push origin feature/amazing-feature`
+5. 提交 **Pull Request**
+
+本项目基于 **MIT License** 开源协议。详见 [LICENSE](LICENSE)。
+
+---
+
+## ⚠️ 免责声明
+
 本项目仅用于学习交流，请勿用于非法用途，否则后果自负。
