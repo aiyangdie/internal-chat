@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/covers/18-internal-chat.jpg" alt="internal-chat 项目封面" width="100%"></p>
+
 <p align="center">
   <img src="https://img.shields.io/badge/WebRTC-P2P-FF6600?style=for-the-badge&logo=webrtc" alt="WebRTC">
   <img src="https://img.shields.io/badge/Node.js-16+-339933?style=for-the-badge&logo=node.js" alt="Node.js">
